@@ -1,0 +1,20 @@
+endpoint: doi
+
+input:
+    method: GET
+
+    params:
+        id:
+            value: "10.1371/journal.pntd.0004314"
+            type: query
+
+    url_pattern: https://api.crossref.org/works/{id}
+
+output:
+    mediatype: json
+
+    schema: "{___subject___, ___author___}"
+
+    values:
+        subject: "ROOT.message.subject"
+        author: "ROOT.message.author"
