@@ -1,6 +1,7 @@
 package com.foodakai.servicecaller.utils.processors;
 
 import com.foodakai.servicecaller.utils.config.Configuration;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -39,7 +40,39 @@ public class ResponseProcessor {
 
                 if(key.equals("ROOT")) continue;
 
+                /*
+                *   TODO:
+                *       do the chunk below in a more componentized manner
+                * */
+                if(key.contains("[") && key.contains("]") &&  key.contains("=")){
+
+                    String comp = key.split("\\[")[1].replace("]", "");
+                    key = key.replaceFirst("\\[.*\\]", "");
+
+                    jbody = curr.get(key).toString();
+
+                    JSONArray jarray = new JSONArray(jbody);
+
+                    for(Object jobj : jarray){
+
+                        JSONObject jobject = (JSONObject)jobj;
+
+                        String k = comp.split("=")[0];
+                        String v = comp.split("=")[1];
+
+                        if(jobject.get(k).toString().equals(v))
+                        {
+                            curr = jobject;
+                            break;
+                        }
+                    }
+
+                    continue;
+                }
+
                 jbody = curr.get(key).toString();
+
+                System.out.println(jbody);
                 if(i!=keys.length-1)
                     curr = new JSONObject(jbody);
             }
