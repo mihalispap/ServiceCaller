@@ -9,6 +9,8 @@ public class URLSourcerResponse {
 
     private String output="";
 
+    private byte[] binaryoutput;
+
     public URLSourcerResponse() {
     }
 
@@ -26,5 +28,13 @@ public class URLSourcerResponse {
 
     public void setOutput(String output) {
         this.output = output;
+    }
+
+    public byte[] getBinaryoutput() {
+        return binaryoutput;
+    }
+
+    public void setBinaryoutput(byte[] binaryoutput) {
+        this.binaryoutput = binaryoutput;
     }
 }

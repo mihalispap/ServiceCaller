@@ -8,6 +8,8 @@ import com.foodakai.servicecaller.utils.processors.RequestProcessor;
 import com.foodakai.servicecaller.utils.processors.ResponseProcessor;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.FileUtils;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -43,11 +45,23 @@ public class URLSourcer {
          * */
 
         try {
-            response.setOutput(Utilities.sendGET(url));
+            response.setBinaryoutput((byte[])Utilities.sendGET(url));
+
+            Base64 codec = new Base64();
+            byte[] encoded = codec.encode(response.getBinaryoutput());
+
+            response.setOutput(new String(encoded));
+
+            //FileUtils.writeByteArrayToFile(new File("file1.pdf"), response.getBinaryoutput());
         }
         catch(Exception e){
-            e.printStackTrace();
-            response.setOutput("error");
+            response.setBinaryoutput(null);
+            try {
+                response.setOutput(((StringBuffer)Utilities.sendGET(url)).toString());
+            }
+            catch(Exception ex){
+                response.setOutput("error");
+            }
         }
 
         Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").create();

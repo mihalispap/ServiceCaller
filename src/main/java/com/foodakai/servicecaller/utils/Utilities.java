@@ -1,14 +1,17 @@
 package com.foodakai.servicecaller.utils;
 
 import com.foodakai.servicecaller.utils.config.Configuration;
+import org.apache.pdfbox.cos.COSDocument;
+import org.apache.pdfbox.pdfparser.PDFParser;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
+import java.net.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 
 public final class Utilities {
 
@@ -27,6 +30,28 @@ public final class Utilities {
         return instance;
     }
 
+    public byte[] readContentIntoByteArray(File file)
+    {
+        FileInputStream fileInputStream = null;
+        byte[] bFile = new byte[(int) file.length()];
+        try
+        {
+            //convert file into array of bytes
+            fileInputStream = new FileInputStream(file);
+            fileInputStream.read(bFile);
+            fileInputStream.close();
+            for (int i = 0; i < bFile.length; i++)
+            {
+                System.out.print((char) bFile[i]);
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return bFile;
+    }
+
     public static Configuration loadConfiguration(String yaml_file){
 
         Configuration configuration = new Configuration();
@@ -42,60 +67,88 @@ public final class Utilities {
         return configuration;
     }
 
-    public static String sendGET(String url) throws Exception{
+    public static Object sendGET(String url) throws Exception{
 
-        URL u = new URL(url);
-        URLConnection uc = u.openConnection();
-        String contentType = uc.getContentType();
-        int contentLength = uc.getContentLength();
+        URL obj = new URL(url);
+        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
+        // optional default is GET
+        con.setRequestMethod("GET");
 
-        if (contentType.startsWith("text/") || contentLength == -1) {
-            throw new IOException("This is not a binary file.");
+        //add request header
+        con.setRequestProperty("User-Agent", "Mozilla/5.0");
+
+        int responseCode = con.getResponseCode();
+        System.out.println("\nSending 'GET' request to URL : " + url);
+        System.out.println("Response Code : " + responseCode);
+        System.out.println("Content Type : " + con.getContentType());
+        //System.out.println("Content Encoding : " + con.getContentEncoding());
+
+//        String cookiesHeader = con.getHeaderField("Set-Cookie");
+//        List<HttpCookie> cookies = HttpCookie.parse(cookiesHeader);
+//
+//        CookieManager cookieManager = new CookieManager();
+//        cookies.forEach(cookie -> cookieManager.getCookieStore().add(null, cookie));
+
+        if(con.getContentType().contains("pdf")) {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            InputStream is = null;
+            try {
+                is = con.getInputStream();
+                byte[] byteChunk = new byte[4096]; // Or whatever size you want to read in at a time.
+                int n;
+
+                while ((n = is.read(byteChunk)) > 0) {
+                    baos.write(byteChunk, 0, n);
+                }
+            } catch (IOException e) {
+                //System.err.printf ("Failed while reading bytes from %s: %s", url.toExternalForm(), e.getMessage());
+                e.printStackTrace();
+                // Perform any other exception handling that's appropriate.
+            } finally {
+                if (is != null) {
+                    is.close();
+                }
+            }
+            return baos.toByteArray();
         }
-        InputStream raw = uc.getInputStream();
-        InputStream in = new BufferedInputStream(raw);
-        byte[] data = new byte[contentLength];
-        int bytesRead = 0;
-        int offset = 0;
-        while (offset < contentLength) {
-            bytesRead = in.read(data, offset, data.length - offset);
-            if (bytesRead == -1)
-                break;
-            offset += bytesRead;
+
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(con.getInputStream()));
+        String inputLine;
+        StringBuffer response = new StringBuffer();
+
+        while ((inputLine = in.readLine()) != null) {
+            response.append(inputLine);
         }
         in.close();
 
-        if (offset != contentLength) {
-            throw new IOException("Only read " + offset + " bytes; Expected " + contentLength + " bytes");
-        }
+        return response;
 
-        return new String(data);
+    }
 
+    public static String pdf2text(String pdf_file) throws Exception{
 
-//        URL obj = new URL(url);
-//        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-//
-//        // optional default is GET
-//        con.setRequestMethod("GET");
-//
-//        //add request header
-//        con.setRequestProperty("User-Agent", "Mozilla/5.0");
-//
-//        int responseCode = con.getResponseCode();
-//        System.out.println("\nSending 'GET' request to URL : " + url);
-//        System.out.println("Response Code : " + responseCode);
-//
-//        BufferedReader in = new BufferedReader(
-//                new InputStreamReader(con.getInputStream()));
-//        String inputLine;
-//        StringBuffer response = new StringBuffer();
-//
-//        while ((inputLine = in.readLine()) != null) {
-//            response.append(inputLine);
-//        }
-//        in.close();
+        PDFParser parser;
+        PDFTextStripper pdfStripper;
+        PDDocument pdDoc ;
+        COSDocument cosDoc ;
 
-        //return response.toString();
+        pdDoc = PDDocument.load(new File(pdf_file));
+        pdfStripper = new PDFTextStripper();
+
+        pdDoc.getNumberOfPages();
+
+        // reading text from page 1 to 10
+        // if you want to get text from full pdf file use this code
+        // pdfStripper.setEndPage(pdDoc.getNumberOfPages());
+
+        String text = pdfStripper.getText(pdDoc);
+
+        pdDoc.close();
+
+        System.out.println(text.trim());
+
+        return text.trim();
     }
 }
