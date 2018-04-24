@@ -45,16 +45,10 @@ public class ServiceCallback {
         String filename = "fl."+System.currentTimeMillis() + ".upld."+file.getSize();
         if (!file.isEmpty()) {
             try {
-
-                byte[] bytes = file.getBytes();
-                BufferedOutputStream stream =
-                        new BufferedOutputStream(new FileOutputStream(
-                                new File(filename)));
-                stream.write(bytes);
-                stream.close();
-                //return "You successfully uploaded " + name + " into " + name + "-uploaded !";
+                Utilities.save_file(filename, file);
             } catch (Exception e) {
-                //return "You failed to upload " + name + " => " + e.getMessage();
+                e.printStackTrace();
+                return "{\"error\":\"message\"}";
             }
         }
 

@@ -5,6 +5,7 @@ import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
+import org.springframework.web.multipart.MultipartFile;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.*;
@@ -125,6 +126,15 @@ public final class Utilities {
 
         return response;
 
+    }
+
+    public static void save_file(String filename, MultipartFile file) throws Exception {
+        byte[] bytes = file.getBytes();
+        BufferedOutputStream stream =
+            new BufferedOutputStream(new FileOutputStream(
+                            new File(filename)));
+        stream.write(bytes);
+        stream.close();
     }
 
     public static String pdf2text(String pdf_file) throws Exception{
