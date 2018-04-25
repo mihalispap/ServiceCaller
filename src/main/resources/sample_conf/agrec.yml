@@ -1,0 +1,24 @@
+endpoint: agrec
+
+mediatype: json
+
+input:
+    method: GET
+
+    params:
+        apikey:
+            value: "8e5bcb27-f2ef-46e7-b686-13764ed1a964"
+            type: url
+        input:
+            value: "grapevines+vitis+vinifera"
+            type: url
+
+    url_pattern: http://data.bioontology.org/recommender?apikey={apikey}&input={input}
+
+output:
+    mediatype: json
+
+    schema: "{___ontologies___}"
+
+    values:
+        ontologies: "ROOT.CUSTOMELEMENT[=].ontologies[=].acronym"

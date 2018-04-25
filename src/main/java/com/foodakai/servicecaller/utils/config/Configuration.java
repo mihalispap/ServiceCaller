@@ -6,6 +6,8 @@ public final class Configuration {
 
     private String endpoint;
 
+    private String mediatype;
+
     private Input input;
 
     private Output output;
@@ -15,6 +17,14 @@ public final class Configuration {
 
     public Output getOutput() {
         return output;
+    }
+
+    public String getMediatype() {
+        return mediatype;
+    }
+
+    public void setMediatype(String mediatype) {
+        this.mediatype = mediatype;
     }
 
     public void setOutput(Output output) {

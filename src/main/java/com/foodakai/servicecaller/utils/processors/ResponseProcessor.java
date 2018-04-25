@@ -1,6 +1,8 @@
 package com.foodakai.servicecaller.utils.processors;
 
 import com.foodakai.servicecaller.utils.config.Configuration;
+
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -26,6 +28,18 @@ public class ResponseProcessor {
     private String json_process(String input, Configuration config){
 
         Map<String, String> extracted = new HashMap<>();
+
+        boolean customelement=false;
+        for( Map.Entry<String, String> entry : config.getOutput().getValues().entrySet()){
+            if(entry.getValue().contains("CUSTOMELEMENT")){
+                customelement=true;
+                break;
+            }
+        }
+
+
+        if(customelement)
+            input="{\"CUSTOMELEMENT\":"+input+"}";
         JSONObject obj = new JSONObject(input);
 
         for( Map.Entry<String, String> entry : config.getOutput().getValues().entrySet()){
@@ -57,10 +71,19 @@ public class ResponseProcessor {
 
                         JSONObject jobject = (JSONObject)jobj;
 
-                        String k = comp.split("=")[0];
-                        String v = comp.split("=")[1];
+                        String k = "";
+                        try{
+                            k=comp.split("=")[0];
+                        }
+                        catch(Exception e){}
 
-                        if(jobject.get(k).toString().equals(v))
+                        String v = "";
+                        try{
+                            v=comp.split("=")[1];
+                        }
+                        catch(Exception e){}
+
+                        if(k.isEmpty() || v.isEmpty() || jobject.get(k).toString().equals(v))
                         {
                             curr = jobject;
                             break;
@@ -88,8 +111,13 @@ public class ResponseProcessor {
         String resp = configuration.getOutput().getSchema();
         for(Map.Entry<String, String> entry : values.entrySet()){
 
-            resp = resp.replace("___"+entry.getKey()+"___",
-                    "\""+entry.getKey()+"\":"+entry.getValue());
+            if(!entry.getValue().startsWith("[") && !entry.getValue().startsWith("{")
+                    && !StringUtils.isNumeric(entry.getValue()))
+                resp = resp.replace("___"+entry.getKey()+"___",
+                        "\""+entry.getKey()+"\":\""+entry.getValue()+"\"");
+            else
+                resp = resp.replace("___"+entry.getKey()+"___",
+                        "\""+entry.getKey()+"\":"+entry.getValue());
 
         }
 

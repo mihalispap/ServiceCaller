@@ -13,8 +13,9 @@ input:
 output:
     mediatype: json
 
-    schema: "{___subject___, ___author___}"
+    schema: "{___subject___, ___author___, ___source___}"
 
     values:
         subject: "ROOT.message.subject"
         author: "ROOT.message.author"
+        source: "ROOT.message.source"

@@ -68,7 +68,7 @@ public final class Utilities {
         return configuration;
     }
 
-    public static Object sendGET(String url) throws Exception{
+    /*public static Object sendGET(String url) throws Exception{
 
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -78,6 +78,66 @@ public final class Utilities {
 
         //add request header
         con.setRequestProperty("User-Agent", "Mozilla/5.0");
+        con.setRequestProperty("Accept", "application/json");
+
+        int responseCode = con.getResponseCode();
+        System.out.println("\nSending 'GET' request to URL : " + url);
+        System.out.println("Response Code : " + responseCode);
+        System.out.println("Content Type : " + con.getContentType());
+
+        if(con.getContentType().contains("pdf")) {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            InputStream is = null;
+            try {
+                is = con.getInputStream();
+                byte[] byteChunk = new byte[4096]; // Or whatever size you want to read in at a time.
+                int n;
+
+                while ((n = is.read(byteChunk)) > 0) {
+                    baos.write(byteChunk, 0, n);
+                }
+            } catch (IOException e) {
+                //System.err.printf ("Failed while reading bytes from %s: %s", url.toExternalForm(), e.getMessage());
+                e.printStackTrace();
+                // Perform any other exception handling that's appropriate.
+            } finally {
+                if (is != null) {
+                    is.close();
+                }
+            }
+            return baos.toByteArray();
+        }
+
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(con.getInputStream()));
+        String inputLine;
+        StringBuffer response = new StringBuffer();
+
+        while ((inputLine = in.readLine()) != null) {
+            response.append(inputLine);
+        }
+        in.close();
+
+        return response;
+
+    }*/
+
+    public static Object sendGET(String url, Configuration config) throws Exception{
+
+        URL obj = new URL(url);
+        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+        // optional default is GET
+        con.setRequestMethod("GET");
+
+        //add request header
+        con.setRequestProperty("User-Agent", "Mozilla/5.0");
+
+        try {
+            if (config != null && config.getMediatype().equals("json"))
+                con.setRequestProperty("Accept", "application/json");
+        }
+        catch(Exception e){}
 
         int responseCode = con.getResponseCode();
         System.out.println("\nSending 'GET' request to URL : " + url);

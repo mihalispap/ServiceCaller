@@ -46,7 +46,7 @@ public class RequestProcessor {
             url = url.replace("{"+entry.getKey()+"}", entry.getValue().getValue());
         }
 
-        return ((StringBuffer)Utilities.sendGET(url)).toString();
+        return ((StringBuffer)Utilities.sendGET(url, configuration)).toString();
 
 //        URL obj = new URL(url);
 //        HttpURLConnection con = (HttpURLConnection) obj.openConnection();

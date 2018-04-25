@@ -57,6 +57,7 @@ public class CSVParser {
                 }
                 response.getValues().add(line[column_no].toLowerCase());
             }
+            reader.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

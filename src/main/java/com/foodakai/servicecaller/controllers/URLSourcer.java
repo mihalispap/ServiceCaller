@@ -45,7 +45,7 @@ public class URLSourcer {
          * */
 
         try {
-            response.setBinaryoutput((byte[])Utilities.sendGET(url));
+            response.setBinaryoutput((byte[])Utilities.sendGET(url, null));
 
             Base64 codec = new Base64();
             byte[] encoded = codec.encode(response.getBinaryoutput());
@@ -57,7 +57,7 @@ public class URLSourcer {
         catch(Exception e){
             response.setBinaryoutput(null);
             try {
-                response.setOutput(((StringBuffer)Utilities.sendGET(url)).toString());
+                response.setOutput(((StringBuffer)Utilities.sendGET(url, null)).toString());
             }
             catch(Exception ex){
                 response.setOutput("error");
