@@ -45,6 +45,25 @@ public class JsonizePDF {
 
         try {
             response.setText(Utilities.pdf2text(filename));
+
+            for(String sentence : response.getText().split("\\.")){
+
+                if(Utilities.is_important_sentence(sentence))
+                    response.setImportant_text(response.getImportant_text()+"\n"+sentence+".");
+
+            }
+
+            response.setImportant_text(Utilities.remove_irrelevant_sections(response.getImportant_text()));
+            response.setKeywords(Utilities.extract_keywords(response.getText()));
+
+            response.setTitle(Utilities.pdf2title(filename));
+
+            /*
+            * cleansing part
+            * */
+            response.setImportant_text(Utilities.cleanse_string(response.getImportant_text()));
+            response.setText(Utilities.cleanse_string(response.getText()));
+            response.setTitle(Utilities.cleanse_string(response.getTitle()));
         }
         catch(Exception e){
             response.setText("unable to extract");

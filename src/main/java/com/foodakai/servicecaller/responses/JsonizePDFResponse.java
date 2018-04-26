@@ -2,6 +2,7 @@ package com.foodakai.servicecaller.responses;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @JsonSerialize
@@ -10,6 +11,10 @@ public class JsonizePDFResponse {
     private String text;
 
     private String title;
+
+    private String important_text="";
+
+    private List<String> keywords;
 
     private List<String> authors;
 
@@ -25,6 +30,14 @@ public class JsonizePDFResponse {
     private List<String> tables;
 
     public JsonizePDFResponse() {
+    }
+
+    public String getImportant_text() {
+        return important_text;
+    }
+
+    public void setImportant_text(String important_text) {
+        this.important_text = important_text;
     }
 
     public String getText() {
@@ -73,5 +86,13 @@ public class JsonizePDFResponse {
 
     public void setTables(List<String> tables) {
         this.tables = tables;
+    }
+
+    public List<String> getKeywords() {
+        return keywords;
+    }
+
+    public void setKeywords(List<String> keywords) {
+        this.keywords = keywords;
     }
 }

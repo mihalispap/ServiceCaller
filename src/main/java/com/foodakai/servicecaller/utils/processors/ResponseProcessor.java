@@ -55,9 +55,9 @@ public class ResponseProcessor {
                 if(key.equals("ROOT")) continue;
 
                 /*
-                *   TODO:
-                *       do the chunk below in a more componentized manner
-                * */
+                 *   TODO:
+                 *       do the chunk below in a more componentized manner
+                 * */
                 if(key.contains("[") && key.contains("]") &&  key.contains("=")){
 
                     String comp = key.split("\\[")[1].replace("]", "");
@@ -124,7 +124,6 @@ public class ResponseProcessor {
         return resp;
     }
 }
-
 
 
 

@@ -55,6 +55,8 @@ public class CSVParser {
                     no_lines++;
                     continue;
                 }
+                if(line[column_no].toLowerCase().isEmpty()) continue;
+
                 response.getValues().add(line[column_no].toLowerCase());
             }
             reader.close();
